@@ -28,7 +28,6 @@ BUILDIN_FUNC(countitem_nofavorite)
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	//!!!!!!!
 	int count = script_countitem_nofavorite_sub(sd->inventory.u.items_inventory, id, MAX_INVENTORY, (aid > 3) ? true : false, random_option, st, sd);
 	if (count < 0) {
 		st->state = END;
