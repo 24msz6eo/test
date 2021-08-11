@@ -1,3 +1,75 @@
+static int script_countitem_sub(struct item *items, std::shared_ptr<item_data> id, int size, bool expanded, bool random_option, struct script_state *st, struct map_session_data *sd = nullptr, bool rental = false) {
+	nullpo_retr(-1, items);
+	nullpo_retr(-1, st);
+
+	int count = 0;
+
+	if (!expanded) { // For non-expanded functions
+		t_itemid nameid = id->nameid;
+
+		for (int i = 0; i < size; i++) {
+			item *itm = &items[i];
+
+			if (itm == nullptr || itm->nameid == 0 || itm->amount < 1 || (!rental && itm->expire_time > 0))
+				continue;
+			if (itm->nameid == nameid)
+				count += itm->amount;
+		}
+	} else { // For expanded functions
+		item it;
+
+		memset(&it, 0, sizeof(it));
+
+		it.nameid = id->nameid;
+		it.identify = script_getnum(st,3);
+		it.refine  = script_getnum(st,4);
+		it.attribute = script_getnum(st,5);
+		it.card[0] = script_getnum(st,6);
+		it.card[1] = script_getnum(st,7);
+		it.card[2] = script_getnum(st,8);
+		it.card[3] = script_getnum(st,9);
+
+		if (random_option) {
+			if (!sd) {
+				ShowError("buildin_countitem3: Player not attached.\n");
+				return -1;
+			}
+
+			int res = script_getitem_randomoption(st, sd, &it, "countitem3", 10);
+
+			if (res != SCRIPT_CMD_SUCCESS)
+				return -1;
+		}
+
+		for (int i = 0; i < size; i++) {
+			item *itm = &items[i];
+
+			if (itm == nullptr || itm->nameid == 0 || itm->amount < 1 || (!rental && items[i].expire_time > 0))
+				continue;
+			if (itm->nameid != it.nameid || itm->identify != it.identify || itm->refine != it.refine || itm->attribute != it.attribute)
+				continue;
+			if (memcmp(it.card, itm->card, sizeof(it.card)))
+				continue;
+			if (random_option) {
+				uint8 j;
+
+				for (j = 0; j < MAX_ITEM_RDM_OPT; j++) {
+					if (itm->option[j].id != it.option[j].id || itm->option[j].value != it.option[j].value || itm->option[j].param != it.option[j].param)
+						break;
+				}
+				if (j != MAX_ITEM_RDM_OPT)
+					continue;
+			}
+
+			count += items[i].amount;
+		}
+	}
+
+	return count;
+}
+
+
+
 BUILDIN_FUNC(countitem)
 {
 	TBL_PC *sd;
