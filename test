@@ -1,4 +1,4 @@
-BUILDIN_FUNC(countitem)
+BUILDIN_FUNC(countitem_nofavorite)
 {
 	TBL_PC *sd;
 	char *command = (char *)script_getfuncname(st);
