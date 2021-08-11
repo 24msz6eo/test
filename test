@@ -1,4 +1,4 @@
-BUILDIN_FUNC(countitem_nofavorite)
+BUILDIN_FUNC(countitem)
 {
 	TBL_PC *sd;
 	char *command = (char *)script_getfuncname(st);
@@ -28,7 +28,7 @@ BUILDIN_FUNC(countitem_nofavorite)
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	int count = script_countitem_nofavorite_sub(sd->inventory.u.items_inventory, id, MAX_INVENTORY, (aid > 3) ? true : false, random_option, st, sd);
+	int count = script_countitem_sub(sd->inventory.u.items_inventory, id, MAX_INVENTORY, (aid > 3) ? true : false, random_option, st, sd);
 	if (count < 0) {
 		st->state = END;
 		return SCRIPT_CMD_FAILURE;
