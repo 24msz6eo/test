@@ -1,3 +1,15 @@
+			if (fontColor)
+				clif_broadcast2(bl, mes, (int)strlen(mes) + 1, strtol(fontColor, (char**)NULL, 0), fontType, fontSize, fontAlign, fontY, target);
+			else
+				clif_broadcast(bl, mes, (int)strlen(mes) + 1, flag & BC_COLOR_MASK, target);
+
+
+
+
+
+
+
+
 static int script_countitem_nofavorite_sub(struct item *items, struct item_data *id, int size, bool expanded, bool random_option, struct script_state *st, struct map_session_data *sd = nullptr, bool rental = false, bool favorite = false) {
 	nullpo_retr(-1, items);
 	nullpo_retr(-1, st);
