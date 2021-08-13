@@ -1,7 +1,7 @@
 			if (fontColor)
-				clif_broadcast2(bl, mes, (int)strlen(mes) + 1, strtol(fontColor, (char**)NULL, 0), fontType, fontSize, fontAlign, fontY, target);
+				clif_broadcast2(bl, mes, (int)strlen(mes)+1, strtol(fontColor, (char **)NULL, 0), fontType, fontSize, fontAlign, fontY, target);
 			else
-				clif_broadcast(bl, mes, (int)strlen(mes) + 1, flag & BC_COLOR_MASK, target);
+				clif_broadcast(bl, mes, (int)strlen(mes)+1, flag&BC_COLOR_MASK, target);
 
 
 
