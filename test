@@ -4,8 +4,8 @@ function	Job_Menu	{
 	function Confirm_Change;
 	while(true) {
 		.@opt_cnt =  getarraysize(getarg(0));
-		if( .@opt_cnt <= 0 ) {
-			mes "No more jobs are available.";
+		if( .@opt_cnt <= 0) {
+			mes "目前沒有適合你的職業可以轉職。";
 			close;
 		}
 
@@ -13,16 +13,16 @@ function	Job_Menu	{
 		if (.@opt_cnt > 1) {
 			// Multiple job classes given. Select one and save it to .@class
 			// After that confirm .@class
-			mes "Select a job.";
+			mes "選擇一個職業。";
 			.@menu$ = "";
 			for (.@i = 0; .@i < .@opt_cnt; .@i++) {
 				if( getelementofarray(getarg(0), .@i) == Job_Novice_High)
-					.@jobname$ = "^0055FFRebirth^000000";
+					.@jobname$ = "^0055FF轉生^000000";
 				else
 					.@jobname$ = jobname(getelementofarray(getarg(0), .@i));
 				.@menu$ = .@menu$ + " ~ " + .@jobname$ + ":";
 			}
-			.@menu$ = .@menu$+" ~ ^777777Cancel^000000";
+			.@menu$ = .@menu$+" ~ ^777777取消^000000";
 			.@selected = select(.@menu$) - 1;
 			if( .@selected < 0 || .@selected >= .@opt_cnt )
 				close;
@@ -36,8 +36,8 @@ function	Job_Menu	{
 			// Super Baby can both be selected in one of the first class
 			// changes. That's why the Level Requirement is after and not before
 			// the selection.
-			mes "A base level of " + .SNovice +
-				" is required to turn into a " + jobname(.@class) + ".";
+			mes "基礎等級 " + .SNovice +
+				" 需要變成一個 " + jobname(.@class) + "。";
 			return;
 		}
 		// Confirm the Class
