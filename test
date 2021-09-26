@@ -17,7 +17,7 @@
 	// From here on the jobmaster checks the current class
 	// and fills the the array `.@job_opt` with possible
 	// job options for the player.
-	
+
 	if( .@rebirth_possible ) {
 		// Rebirth option (displayed on the top of the menu)
 		Require_Level(.Req_Rebirth[0], .Req_Rebirth[1]);
@@ -90,7 +90,7 @@
 					Job_Options(.@job_opt, Job_Baby_Summoner);
 				break;
 			default:
-				mes "An error has occurred.";
+				mes "發生了錯誤。";
 				close;
 		}
 	} else if( Is_First_Cls(.@eac) || 				// First Class
