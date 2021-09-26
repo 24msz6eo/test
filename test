@@ -4,7 +4,7 @@ function	Job_Change	{
 	.@to_cls = getarg(0);
 	next;
 	mes .NPCName$;
-	mes "You are now " + callfunc("F_InsertArticle", jobname(.@to_cls)) + "!";
+	mes "你現在已轉職成 " + callfunc("F_InsertArticle", jobname(.@to_cls)) + "!";
 	if (.@to_cls == Job_Novice_High && .LastJob)
 		lastJob = Class; // Saves the lastJob for rebirth
 	jobchange .@to_cls;
@@ -31,16 +31,16 @@ function	Confirm_Change	{
 	.@class = getarg(0, -1);
 	.@back = getarg(1, false);
 	if( .@class < 0 || eaclass(.@class) == -1 ) {
-		mes "Unknown Class Error.";
+		mes "未知的類錯誤。";
 		close;
 	}
-	mes "Do you want to change into ^0055FF"+jobname(.@class)+"^000000 class?";
-	.@job_option$ = " ~ Change into ^0055FF"+jobname(.@class)+"^000000 class";
+	mes "你想轉職成 ^0055FF"+jobname(.@class)+"^000000 嗎?";
+	.@job_option$ = " ~ 轉職成 ^0055FF"+jobname(.@class)+"^000000。";
 	if( .@class == Job_Novice_High)
-		.@job_option$ = " ~ ^0055FFRebirth^000000";
+		.@job_option$ = " ~ ^0055FF轉生^000000";
 	
 	if (select(.@job_option$+": ~ ^777777" + 
-			((.@back) ?"Go back" : "Cancel") + "^000000") == 1) {
+			((.@back) ?"返回" : "取消") + "^000000") == 1) {
 		Job_Change(.@class);
 	}
 	if (!.@back)
@@ -69,7 +69,11 @@ function	Get_Job_Equip	{
 			case Job_Priest:
 				getitem 5747,1;	break;	//	Mitra [1]
 			case Job_Blacksmith:
-				getitem 5749,1;	break;	//	Driver Band [1]
+				if(Sex)
+					getitem 5749,1;
+				else
+					getitem 5760,1;
+				break;
 			case Job_Assassin:
 				getitem 5755,1;	break;	//	Silent Executor [1]
 			case Job_Crusader:
@@ -119,8 +123,6 @@ function	Get_Job_Equip	{
 				getitem 1907,1;	break;	//	Guitar [0]
 			case Job_Dancer:
 				getitem 1960,1;	break;	//	Whip [1]
-			case Job_Super_Novice:
-				getitem 1208,1;	break;	//	Main Gauche [4]
 			case Job_Star_Gladiator:
 				getitem 1550,1;	break;	//	Book [3]
 			case Job_Soul_Linker:
@@ -143,6 +145,8 @@ function	Get_Job_Equip	{
 				getitem 1302,1;	break;	//	Axe [4]
 			case Job_Thief:
 				getitem 1208,1;	break;	//	Main Gauche [4]
+			case Job_Super_Novice:
+				getitem 1208,1;	break;	//	Main Gauche [4]
 			case Job_Gunslinger:
 				getitem 13101,1; break;	//	Six Shooter [2]
 			case Job_Ninja:
@@ -153,28 +157,29 @@ function	Get_Job_Equip	{
 }
 
 OnInit:
+//	waitingroom "職業輔助",0;
 	// Initialisation, do not edit these
-	.NPCName$ = "[Job Master]";
+	.NPCName$ = "[布倫希爾德]";
 	
 	// Settings
 	.ThirdClass = true;			// Enable third classes?
 	.RebirthClass = true;			// Enable rebirth classes?
 	.SecondExpanded = true;		// Enable new expanded second classes: Ex. Super Novice, Kagerou/Oboro, Rebellion?
-	.BabyNovice = true;	// Enable Baby novice classes? Disable it if you like player must have parent to get job baby.
+	.BabyNovice = false;	// Enable Baby novice classes? Disable it if you like player must have parent to get job baby.
 	.BabyClass = true;				// Enable Baby classes?
 	.BabyThird = true;				// Enable Baby third classes?
 	.BabyExpanded = true;			// Enable Baby Expanded classes: Ex. Baby Ninja, Baby Taekwon, etc.
 	.BabySummoner = true;			// Enable Baby Summoner?
 	.LastJob = true;				// Enforce linear class changes?
 	.SkillPointCheck = true;		// Force player to use up all skill points?
-	.Platinum = true;				// Get platinum skills automatically?
-	.GetJobEquip = false;			// Get job equipment (mostly weapons) on job change?
+	.Platinum = false;				// Get platinum skills automatically?
+	.GetJobEquip = true;			// Get job equipment (mostly weapons) on job change?
 
 	// Level Requirements
 	setarray .Req_First[0],1,10; 		// Minimum base level, job level to turn into 1st class
-	setarray .Req_Second[0],1,40; 		// Minimum base level, job level to turn into 2nd class
+	setarray .Req_Second[0],1,50; 		// Minimum base level, job level to turn into 2nd class
 	setarray .Req_Rebirth[0],99,50;		// Minimum base level, job level to rebirth
-	setarray .Req_Third[0],99,50;		// Minimum base level, job level to change to third class
+	setarray .Req_Third[0],99,70;		// Minimum base level, job level to change to third class
 	setarray .Req_Exp_NJ_GS[0],99,70; 	// Minimum base level, job level to turn into Expanded Ninja and Gunslinger
 	setarray .Req_Exp_SNOVI[0],99,99; 	// Minimum base level, job level to turn into Expanded Super Novice
 	.SNovice = 45;						// Minimum base level to turn into Super Novice
@@ -188,5 +193,9 @@ OnInit:
 		.BabyExpanded = false;
 		.BabySummoner = false;
 	}
+	end;
+OnTouch:
+	npctalk "布倫希爾德 : 我是職業天使 ~布倫希爾德~。", "", bc_self;
+	emotion 3;
 	end;
 }
