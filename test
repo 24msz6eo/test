@@ -1,123 +1,21 @@
-			if (fontColor)
-				clif_broadcast2(bl, mes, (int)strlen(mes)+1, strtol(fontColor, (char **)NULL, 0), fontType, fontSize, fontAlign, fontY, target);
-			else
-				clif_broadcast(bl, mes, (int)strlen(mes)+1, flag&BC_COLOR_MASK, target);
-
-
-
-
-
-
-
-
-static int script_countitem_nofavorite_sub(struct item *items, struct item_data *id, int size, bool expanded, bool random_option, struct script_state *st, struct map_session_data *sd = nullptr, bool rental = false, bool favorite = false) {
-	nullpo_retr(-1, items);
-	nullpo_retr(-1, st);
-
-	int count = 0;
-
-	if (!expanded) { // For non-expanded functions
-		t_itemid nameid = id->nameid;
-
-		for (int i = 0; i < size; i++) {
-			item *itm = &items[i];
-
-			//!!!!!!!
-			if (itm == nullptr || itm->nameid == 0 || itm->amount < 1 || (!rental && itm->expire_time > 0) || (!favorite && itm->favorite > 0))
-				continue;
-			if (itm->nameid == nameid)
-				count += itm->amount;
-		}
-	} else { // For expanded functions
-		item it;
-
-		memset(&it, 0, sizeof(it));
-
-		it.nameid = id->nameid;
-		it.identify = script_getnum(st,3);
-		it.refine  = script_getnum(st,4);
-		it.attribute = script_getnum(st,5);
-		it.card[0] = script_getnum(st,6);
-		it.card[1] = script_getnum(st,7);
-		it.card[2] = script_getnum(st,8);
-		it.card[3] = script_getnum(st,9);
-
-		if (random_option) {
-			if (!sd) {
-				ShowError("buildin_countitem3: Player not attached.\n");
-				return -1;
-			}
-
-			int res = script_getitem_randomoption(st, sd, &it, "countitem3", 10);
-
-			if (res != SCRIPT_CMD_SUCCESS)
-				return -1;
-		}
-
-		for (int i = 0; i < size; i++) {
-			item *itm = &items[i];
-
-			if (itm == nullptr || itm->nameid == 0 || itm->amount < 1 || (!rental && items[i].expire_time > 0))
-				continue;
-			if (itm->nameid != it.nameid || itm->identify != it.identify || itm->refine != it.refine || itm->attribute != it.attribute)
-				continue;
-			if (memcmp(it.card, itm->card, sizeof(it.card)))
-				continue;
-			if (random_option) {
-				uint8 j;
-
-				for (j = 0; j < MAX_ITEM_RDM_OPT; j++) {
-					if (itm->option[j].id != it.option[j].id || itm->option[j].value != it.option[j].value || itm->option[j].param != it.option[j].param)
-						break;
-				}
-				if (j != MAX_ITEM_RDM_OPT)
-					continue;
-			}
-
-			count += items[i].amount;
-		}
-	}
-
-	return count;
-}
-
-
-
-BUILDIN_FUNC(countitem)
-{
-	TBL_PC *sd;
-	char *command = (char *)script_getfuncname(st);
-	int aid = 3;
-	bool random_option = false;
-
-	if (command[strlen(command)-1] == '2')
-		aid = 10;
-	else if (command[strlen(command)-1] == '3') {
-		aid = 13;
-		random_option = true;
-	}
-
-	if (!script_accid2sd(aid, sd))
-		return SCRIPT_CMD_FAILURE;
-
-	std::shared_ptr<item_data> id;
-
-	if (script_isstring(st, 2)) // item name
-		id = item_db.searchname( script_getstr( st, 2 ) );
-	else // item id
-		id = item_db.find( script_getnum( st, 2 ) );
-
-	if (!id) {
-		ShowError("buildin_%s: Invalid item '%s'.\n", command, script_getstr(st, 2)); // returns string, regardless of what it was
-		script_pushint(st, 0);
-		return SCRIPT_CMD_FAILURE;
-	}
-
-	int count = script_countitem_sub(sd->inventory.u.items_inventory, id, MAX_INVENTORY, (aid > 3) ? true : false, random_option, st, sd);
-	if (count < 0) {
-		st->state = END;
-		return SCRIPT_CMD_FAILURE;
-	}
-	script_pushint(st, count);
-	return SCRIPT_CMD_SUCCESS;
+// Checks if the player can change to third class.
+// Note: This does not include the level checks.
+function	Can_Change_Third	{
+	// To change to third class you either need to be:
+	// * Second Class
+	// * Transcendent Second Class
+	// * Baby Second Class
+	if( !.ThirdClass )
+		return false; // Third job change disabled
+	if( !(eaclass()&EAJL_2) )
+		return false; // Not second Class
+	if( eaclass()&EAJL_THIRD )
+		return false; // Already Third Class
+	if( roclass(eaclass()|EAJL_THIRD) < 0 )
+		return false; // Job has no third Class
+	if( (eaclass()&EAJ_UPPERMASK) == EAJ_SUPER_NOVICE )
+		return false; // Exp. Super Novice equals 3rd Cls, but has it's own case
+	if( Is_Baby() && (!.BabyClass || !.BabyThird) )
+		return false; // No Baby (Third) change allowed
+	return true;
 }
