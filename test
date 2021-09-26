@@ -1,23 +1,15 @@
-// Checks if the player can change to third class.
-// Note: This does not include the level checks.
-function	Can_Change_Third	{
-	// To change to third class you either need to be:
+function	Can_Rebirth	{
+	// To rebirth, you need to be:
 	// * Second Class
-	// * Transcendent Second Class
-	// * Baby Second Class
-	if( !roclass(eaclass()&EAJL_UPPER))
-		return false; // Job has no transcended class
-	if( !.ThirdClass )
-		return false; // Third job change disabled
+	if( !.RebirthClass )
+		return false; // Rebirth disabled
 	if( !(eaclass()&EAJL_2) )
 		return false; // Not second Class
-	if( eaclass()&EAJL_THIRD )
-		return false; // Already Third Class
-	if( roclass(eaclass()|EAJL_THIRD) < 0 )
-		return false; // Job has no third Class
-	if( (eaclass()&EAJ_UPPERMASK) == EAJ_SUPER_NOVICE )
-		return false; // Exp. Super Novice equals 3rd Cls, but has it's own case
-	if( Is_Baby() && (!.BabyClass || !.BabyThird) )
-		return false; // No Baby (Third) change allowed
+	if( eaclass()&(EAJL_UPPER|EAJL_THIRD) )
+		return false; // Already Rebirthed/ Third Class
+	if( roclass(eaclass()|EAJL_UPPER) < 0 )
+		return false; // Job has no transcended class
+	if( Is_Baby() && !.BabyClass )
+		return false; // No Baby changes allowed
 	return true;
 }
