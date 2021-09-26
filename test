@@ -5,6 +5,8 @@ function	Can_Change_Third	{
 	// * Second Class
 	// * Transcendent Second Class
 	// * Baby Second Class
+	if( !roclass(eaclass()&EAJL_UPPER))
+		return false; // Job has no transcended class
 	if( !.ThirdClass )
 		return false; // Third job change disabled
 	if( !(eaclass()&EAJL_2) )
